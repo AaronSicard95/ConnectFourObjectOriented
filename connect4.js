@@ -29,6 +29,7 @@ class Game{
     this.self = this;
     this.getColumn = this.findSpotForCol.bind(this);
     this.placeChip = this.placeInTable.bind(this);
+    this.over = false;
   }
   makeBoard() {
     for (let y = 0; y < this.HEIGHT; y++) {
@@ -88,6 +89,9 @@ class Game{
     alert(msg);
   }
   handleClick(evt) {
+    if(this.over == true){
+      return;
+    }
     // get x from ID of clicked cell
     const checkWinMeth = this.checkForWin.bind(this);
     const x = +evt.target.id;
@@ -145,6 +149,7 @@ class Game{
   
         // find winner (only checking each win-possibility as needed)
         if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+          this.over = true;
           return true;
         }
       }
