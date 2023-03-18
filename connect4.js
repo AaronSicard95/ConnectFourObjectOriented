@@ -9,14 +9,22 @@ function validColor(str){
   styleCheck.backgroundColor = str;
   return str!="";
 }
+class Player{
+  constructor(name, number, color){
+    this.name = name;
+    this.number = number;
+    this.color = color;
+  }
+}
 class Game{
-  constructor(width, height, player1Color, player2Color){
+  constructor(Name1, Name2, width, height, player1Color, player2Color){
     this.board = []
-    this.player1Color = !validColor(player1Color)?"red":player1Color;
-    this.player2Color = !validColor(player2Color)==""?"blue":player2Color;
+    this.player1 = new Player(Name1!=""?Name1:"Player1",1, !validColor(player1Color)?"red":player1Color);
+    this.player2 = new Player(Name2!=""?Name2:"Player2",2, !validColor(player2Color)?"blue":player2Color);
+    this.players = [this.player1,this.player2];
     this.WIDTH = width;
     this.HEIGHT = height;
-    this.currPlayer = 1;
+    this.currPlayer = this.players[0];
     this.htmlBoardElements = [];
     this.self = this;
     this.getColumn = this.findSpotForCol.bind(this);
@@ -70,8 +78,7 @@ class Game{
   placeInTable(y, x) {
     const piece = document.createElement('div');
     piece.classList.add('piece');
-    piece.style.backgroundColor = this.currPlayer==1?this.player1Color:this.player2Color;
-    //piece.classList.add(`p${this.currPlayer}`);
+    piece.style.backgroundColor = this.currPlayer.color;
     piece.style.top = -50 * (y + 2);
   
     const spot = document.getElementById(`${y}-${x}`);
@@ -92,13 +99,13 @@ class Game{
     }
   
     // place piece in board and add to HTML table
-    this.board[y][x] = this.currPlayer;
+    this.board[y][x] = this.currPlayer.number;
     this.placeInTable(y, x);
     
     // check for win
     console.log(checkWinMeth())
     if (checkWinMeth()) {
-      return this.endGame(`Player ${this.currPlayer} won!`);
+      return this.endGame(`${this.currPlayer.name} won!`);
     }
     
     // check for tie
@@ -107,7 +114,7 @@ class Game{
     }
       
     // switch players
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+    this.currPlayer = this.currPlayer.number === 1 ? this.players[1] : this.players[0];
   }
   checkForWin() {
     console.log(this);
@@ -123,7 +130,7 @@ class Game{
           y < self.HEIGHT &&
           x >= 0 &&
           x < self.WIDTH &&
-          self.board[y][x] === self.currPlayer
+          self.board[y][x] === self.currPlayer.number
       );
     }
     console.log(this.HEIGHT, this.WIDTH);
@@ -144,15 +151,18 @@ class Game{
     }
   }
 }
-function startGame(P1Color, P2Color){
-let newGame = new Game(7,6,P1Color, P2Color);
+function startGame(name1, name2, P1Color, P2Color){
+let newGame = new Game(name1, name2,7,6,P1Color, P2Color);
 newGame.makeBoard();
 newGame.makeHtmlBoard();
+startButton.value = "Restart Game";
 }
 let P1Text = document.querySelector("#P1Color");
 let P2Text = document.querySelector("#P2Color");
+let P1Name = document.querySelector("#P1Name");
+let P2Name = document.querySelector("#P2Name");
 let startButton = document.querySelector("#startButton");
-startButton.addEventListener("click",function(){startGame(P1Text.value, P2Text.value)});
+startButton.addEventListener("click",function(){startGame(P1Name.value, P2Name.value, P1Text.value, P2Text.value)});
 
 
 
